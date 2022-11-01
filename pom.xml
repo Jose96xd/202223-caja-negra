@@ -42,8 +42,19 @@
 			<artifactId>junit-platform-suite</artifactId>
 			<version>1.8.1</version>
 			<scope>test</scope>
-		</dependency>		
-	</dependencies>
+		</dependency>
+
+        <dependency>
+            <groupId>com.binarytree</groupId>
+            <artifactId>binarytree</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/binarytree.jar</systemPath>
+        </dependency>
+
+
+
+    </dependencies>
 
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
