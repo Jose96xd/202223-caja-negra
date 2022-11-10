@@ -1,3 +1,5 @@
+package com.practica.cajanegra;
+
 import com.binarytree.BinaryTree;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
@@ -12,8 +14,11 @@ public class ArbolTest {
 
     @Test
     public void SizeTest() {
-        BinaryTree<Integer> arbolPrueba = new BinaryTree<Integer>(1);
+        BinaryTree<String> arbolPrueba = new BinaryTree<String>("1");
         int tamanoReal = arbolPrueba.size();
         Assertions.assertEquals(1, tamanoReal);
     }
+
+
+
 }
