@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="CajaNegra" />
+        <module name="202223-caja-negra" />
       </profile>
     </annotationProcessing>
   </component>
