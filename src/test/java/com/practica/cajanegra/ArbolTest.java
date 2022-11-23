@@ -49,6 +49,15 @@ public class ArbolTest {
     }
 
     @Test
+    public void RemoveTest_NodoPresenteConHijo(){
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
+        arbolPrueba.insert("3", arbolPrueba.search("2"), true);
+        arbolPrueba.remove(arbolPrueba.search("1"));
+        Assertions.assertEquals(1, arbolPrueba.size(),
+                "eliminar un nodo intermedio debería eliminar todo el subarbol.");
+    }
+
+    @Test
     public void RemoveTest_NodoNoPresente(){
         Node<String> nodoNoPresente = new Node<>("3");
 
@@ -64,7 +73,7 @@ public class ArbolTest {
         arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
         arbolPrueba.insert("3", arbolPrueba.getRoot(), false);
         Assertions.assertEquals(3, arbolPrueba.size(),
-                "el arbol tras inserciones debería tener 3 nodos");
+                "el arbol tras 2 inserciones debería tener 3 nodos");
     }
 
     @Test
@@ -73,36 +82,55 @@ public class ArbolTest {
                 "el arbol inicial de un solo nodo debería tener depth 0");
         arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
         Assertions.assertEquals(1, arbolPrueba.depth(),
-                "el arbol con 3 nodos debería tener depth 1");
+                "el arbol con 2 nodos debería tener depth 1");
+        arbolPrueba.insert("3", arbolPrueba.search("2"), true);
+        Assertions.assertEquals(2, arbolPrueba.depth(),
+                "el arbol con 3 nodos debería tener depth 2");
+    }
+
+    @Test
+    public void DepthConParametros(){
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
+        arbolPrueba.insert("3", arbolPrueba.search("2"), true);
+        arbolPrueba.insert("4", arbolPrueba.search("2"), false);
+        Assertions.assertEquals(1, arbolPrueba.depth(arbolPrueba.search("2")));
     }
 
     @Test
     public void SearchTest_ContenidoEstaEnArbol(){
         arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
-        Assertions.assertEquals("2", arbolPrueba.search("2").getContent(),
-                "el nodo debería contener 2");
+        arbolPrueba.insert("3", arbolPrueba.search("2"), true);
+        Assertions.assertEquals("3", arbolPrueba.search("3").getContent(),
+                "el nodo debería contener 3");
+    }
+    @Test
+    public void SearchTest_ContenidoEnArbolDuplicado()
+    {
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
+        arbolPrueba.insert("2", arbolPrueba.search("2"), true);
+        Assertions.assertEquals("2", arbolPrueba.search("2").getLeftChild().getContent());
     }
 
     @Test
     public void SearchTest_ContenidoNoPresente(){
-
+        Assertions.assertNull(arbolPrueba.search("87642"));
     }
-
-    /*
     @Test
-    public void DepthConParametrosTest(){
-        arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
-
-        Node<String> nodoHijo = arbolPrueba.search("2");
-
-        Assertions.assertEquals(0, arbolPrueba.depth(nodoHijo),
-                "el subarbol hoja debería tener depth 0");
-        arbolPrueba.insert("3", nodoHijo, true);
-        Assertions.assertEquals(1, arbolPrueba.depth(nodoHijo),
-                "el subarbol hoja debería tener depth 1");
-
+    public void SearchTest_ContenidoNoPresent(){
+        Assertions.assertNull(arbolPrueba.search("87642"));
     }
-    */
+
+    @Test
+    public void InsertTest_InsertEnLaIzquierda(){
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
+        Assertions.assertEquals("2", arbolPrueba.getRoot().getLeftChild().getContent());
+    }
+    @Test
+    public void InsertTest_InsertEnLaDerecha(){
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), false);
+        Assertions.assertEquals("2", arbolPrueba.getRoot().getRightChild().getContent());
+    }
+
 
 
 
