@@ -11,6 +11,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 
+import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class ArbolTest {
 
     BinaryTree<String> arbolPrueba;
@@ -115,10 +120,6 @@ public class ArbolTest {
     public void SearchTest_ContenidoNoPresente(){
         Assertions.assertNull(arbolPrueba.search("87642"));
     }
-    @Test
-    public void SearchTest_ContenidoNoPresent(){
-        Assertions.assertNull(arbolPrueba.search("87642"));
-    }
 
     @Test
     public void InsertTest_InsertEnLaIzquierda(){
@@ -131,10 +132,157 @@ public class ArbolTest {
         Assertions.assertEquals("2", arbolPrueba.getRoot().getRightChild().getContent());
     }
 
+    @Test
+    public void InsertTest_ContenidoNoAlfaNumerico(){
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            arbolPrueba.insert(null, arbolPrueba.getRoot(), false);
+        }, "al insertar con contenido null se lanza una excepcion tipo IllegalArgumentException");
+    }
 
+    @Test
+    public void InsertTest_NodoNoPresente(){
+        Node<String> aux = new Node<>("5");
 
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            arbolPrueba.insert("2", aux, false);
+        }, "al insertar en un nodo no presente en el arbol se lanza una excepcion tipo IllegalArgumentException");
+    }
 
+    @Test
+    public void InsertTest_NodoYaPresenteIzquierda(){
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
+        arbolPrueba.insert("3", arbolPrueba.getRoot(), true);
+        Assertions.assertEquals("3", arbolPrueba.getRoot().getLeftChild().getContent());
+    }
 
+    @Test
+    public void InsertTest_NodoYaPresenteDerecha(){
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), false);
+        arbolPrueba.insert("3", arbolPrueba.getRoot(), false);
+        Assertions.assertEquals("3", arbolPrueba.getRoot().getRightChild().getContent());
+    }
 
+    @Test
+    public void EqualsTest(){
+        BinaryTree<String> aux = new BinaryTree<>("1");
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), false);
+        arbolPrueba.insert("3", arbolPrueba.getRoot(), true);
+        aux.insert("2", aux.getRoot(), false);
+        aux.insert("3", aux.getRoot(), true);
+        Assertions.assertTrue(arbolPrueba.equals(aux));
+    }
+
+    @Test
+    public void EqualsTest_ArbolesDiferentes(){
+        BinaryTree<String> aux = new BinaryTree<>("5");
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), false);
+        arbolPrueba.insert("3", arbolPrueba.getRoot(), true);
+        aux.insert("6", aux.getRoot(), true);
+        aux.insert("7", aux.getRoot(), false);
+        Assertions.assertFalse(arbolPrueba.equals(aux));
+    }
+
+    @Test
+    public void EqualsTest_ArbolesDiferenteTopologia(){
+        BinaryTree<String> aux = new BinaryTree<>("1");
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), false);
+        arbolPrueba.insert("3", arbolPrueba.getRoot(), true);
+        arbolPrueba.insert("4", arbolPrueba.search("2"), false);
+        arbolPrueba.insert("5", arbolPrueba.search("2"), true);
+        arbolPrueba.insert("6", arbolPrueba.search("3"), false);
+        arbolPrueba.insert("7", arbolPrueba.search("3"), true);
+        aux.insert("25", aux.getRoot(), true);
+        aux.insert("453", aux.getRoot(), false);
+        Assertions.assertFalse(arbolPrueba.equals(aux),
+                "Deberia dar false, pero esta mal hecho y siempre da true si la raiz esta en el arbol grande");
+    }
+
+    @Test
+    public void EqualsTest_Null() {
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), false);
+        arbolPrueba.insert("3", arbolPrueba.getRoot(), true);
+        arbolPrueba.insert("4", arbolPrueba.search("2"), false);
+        arbolPrueba.insert("5", arbolPrueba.search("2"), true);
+        arbolPrueba.insert("6", arbolPrueba.search("3"), false);
+        arbolPrueba.insert("7", arbolPrueba.search("3"), true);
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            arbolPrueba.equals(null);
+        }, "al comparar con null se lanza una excepcion tipo NullPointerException");
+    }
+
+    @Test
+    public void ToListTest() {
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
+        arbolPrueba.insert("3", arbolPrueba.getRoot(), false);
+        arbolPrueba.insert("4", arbolPrueba.search("2"), true);
+        arbolPrueba.insert("5", arbolPrueba.search("2"), false);
+        arbolPrueba.insert("6", arbolPrueba.search("3"), true);
+        arbolPrueba.insert("7", arbolPrueba.search("3"), false);
+        ArrayList<String> lista = new ArrayList<String>();
+        lista.add("1");
+        lista.add("2");
+        lista.add("3");
+        lista.add("4");
+        lista.add("5");
+        lista.add("6");
+        lista.add("7");
+        Assertions.assertEquals(lista, arbolPrueba.toList(),
+                "Deberia salir true, pero esta mal hecho ya que lo hace en profundidad");
+    }
+
+    @Test
+    public void GetSubTreeTest() {
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
+        arbolPrueba.insert("3", arbolPrueba.getRoot(), false);
+        arbolPrueba.insert("4", arbolPrueba.search("2"), true);
+        arbolPrueba.insert("5", arbolPrueba.search("2"), false);
+        arbolPrueba.insert("6", arbolPrueba.search("3"), true);
+        arbolPrueba.insert("7", arbolPrueba.search("3"), false);
+        BinaryTree<String> aux = new BinaryTree<>("2");
+        aux.insert("4", aux.search("2"), true);
+        aux.insert("5", aux.search("2"), false);
+        Assertions.assertEquals(aux.toList(), arbolPrueba.getSubTree(arbolPrueba.search("2")).toList());
+    }
+
+    @Test
+    public void GetSubTreeTest_NodoNoPresente() {
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
+        arbolPrueba.insert("3", arbolPrueba.getRoot(), false);
+        arbolPrueba.insert("4", arbolPrueba.search("2"), true);
+        arbolPrueba.insert("5", arbolPrueba.search("2"), false);
+        arbolPrueba.insert("6", arbolPrueba.search("3"), true);
+        arbolPrueba.insert("7", arbolPrueba.search("3"), false);
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            arbolPrueba.getSubTree(arbolPrueba.search(null));
+        }, "al poner como raiz un nodo con null se lanza una excepcion tipo IllegalArgumentException");
+    }
+
+    @Test
+    public void toStringTest() {
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
+        arbolPrueba.insert("3", arbolPrueba.getRoot(), false);
+        arbolPrueba.insert("4", arbolPrueba.search("2"), true);
+        arbolPrueba.insert("5", arbolPrueba.search("2"), false);
+        arbolPrueba.insert("6", arbolPrueba.search("3"), true);
+        arbolPrueba.insert("7", arbolPrueba.search("3"), false);
+
+        System.out.println(arbolPrueba.toString());
+    }
+
+    @Test
+    public void IteratorTest() {
+        arbolPrueba.insert("2", arbolPrueba.getRoot(), true);
+        arbolPrueba.insert("3", arbolPrueba.getRoot(), false);
+        arbolPrueba.insert("4", arbolPrueba.search("2"), true);
+        arbolPrueba.insert("5", arbolPrueba.search("2"), false);
+        arbolPrueba.insert("6", arbolPrueba.search("3"), true);
+        arbolPrueba.insert("7", arbolPrueba.search("3"), false);
+        Iterator<String> iterador = arbolPrueba.iterator();
+
+        while (iterador.hasNext()){
+            System.out.println(iterador.next());
+        }
+    }
 
 }
